@@ -27,13 +27,3 @@ mongoose
   .catch(err => {
     console.log('database connection failed', err);
   });
-
-// async function main() {
-//   await mongoose.connect(DB);
-
-//   app.listen(port, () => {
-//     console.log(`App running on port ${port}...`);
-//   });
-// }
-
-// main().catch(err => console.log({ err }));
