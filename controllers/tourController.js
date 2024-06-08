@@ -18,46 +18,6 @@ exports.getAllTours = async (req, res) => {
       .paginate();
     const tours = await features.query;
 
-    // step 1: advance filtering
-    // const queryObj = { ...req.query };
-    // const fields = ['sort', 'page', 'limit', 'select'];
-    // fields.forEach(field => delete queryObj[field]);
-    // let queryStr = JSON.stringify(queryObj);
-    // queryStr = queryStr.replace(
-    //   /\b(eq|neq|gte|gt|lte|lt)\b/g,
-    //   match => `$${match}`
-    // );
-    // queryStr = JSON.parse(queryStr);
-    // let query = Tour.find(queryStr);
-
-    // // step 2 : sorting data
-    // if (req.query.sort) {
-    //   const sortBy = req.query.sort.split(',').join(' ');
-    //   query = query.sort(sortBy);
-    // } else {
-    //   query = query.sort('-createdAt');
-    // }
-
-    // //step 3 : field limiting
-    // if (req.query.fields) {
-    //   const select = req.query.fields.split(',').join(' ');
-    //   query = query.select(select);
-    // } else query = query.select('-__v');
-
-    // // step 4 : pagination
-
-    // const page = req.query.page * 1 || 1;
-    // const limit = req.query.limit * 1 || 5;
-    // const skip = (page - 1) * limit;
-    // query = query.skip(skip).limit(limit);
-
-    // if (req.query.page) {
-    //   const noOfData = await Tour.countDocuments();
-    //   if (skip >= noOfData) throw new Error('Page limit over');
-    // }
-
-    // Load data
-    // const tours = await query;
     // SEND RESPONSE
     res.status(200).json({
       status: 'success',
