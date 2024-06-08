@@ -4,6 +4,8 @@ const path = require('path');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const AppError = require('./utils/error/appError');
+const globalErrorhandler = require('./utils/error/globalErrorHandler');
 
 const app = express();
 
@@ -28,5 +30,16 @@ app.get('/', (req, res) => {
 // 3) ROUTES
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+
+app.all('*', (req, res, next) => {
+  next(
+    new AppError(
+      404,
+      `Cannot find this route ${req.originalUrl} on this server`
+    )
+  );
+});
+
+app.use(globalErrorhandler);
 
 module.exports = app;
