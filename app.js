@@ -1,19 +1,18 @@
 const express = require('express');
-const morgan = require('morgan');
 const path = require('path');
+// const morgan = require('morgan');
 
+const AppError = require('./utils/error/appError');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
-const AppError = require('./utils/error/appError');
 const globalErrorhandler = require('./utils/error/globalErrorHandler');
 
 const app = express();
 
 // 1) MIDDLEWARES
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
-
+// if (process.env.NODE_ENV === 'development') {
+//   app.use(morgan('dev'));
+// }
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
