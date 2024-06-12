@@ -24,9 +24,17 @@ const globalErrorhandler = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
-    let error = {};
+    let error = { ...err };
+    error.message = err.message;
+    error.statusCode = err.statusCode;
     if (err.name === 'CastError') {
       error = errorHandler.castError(err);
+    }
+    if (err.name === 'ValidationError') {
+      error = errorHandler.validationError(err);
+    }
+    if (err.code === 11000) {
+      error = errorHandler.duplicateFieldsError(err);
     }
     sendErrorProd(error, res);
   }
