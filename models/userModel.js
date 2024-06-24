@@ -38,8 +38,6 @@ const userSchema = new mongoose.Schema({
     }
   },
   passwordChangedAt: Date,
-  passwordResetToken: String,
-  passwordResetExpires: Date,
   active: {
     type: Boolean,
     default: true,
@@ -49,14 +47,18 @@ const userSchema = new mongoose.Schema({
 
 userSchema.pre('save', async function(next) {
   // Only run this function if password was actually modified
-  if (!this.isModified('password')) return next();
+  if (this.isModified('password')) {
+    console.log('modified');
+    // Hash the password with cost of 12
+    this.password = await bcrypt.hash(this.password, 12);
 
-  // Hash the password with cost of 12
-  this.password = await bcrypt.hash(this.password, 12);
-
-  // Delete passwordConfirm field
-  this.passwordConfirm = undefined;
-  next();
+    // Delete passwordConfirm field
+    this.passwordConfirm = undefined;
+    next();
+  } else {
+    console.log('not modified');
+    next();
+  }
 });
 
 userSchema.methods.comparePassword = async function(userPassword, dbPassword) {
