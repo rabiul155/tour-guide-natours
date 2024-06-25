@@ -8,6 +8,11 @@ router.post('/singup', authController.signup);
 router.post('/singin', authController.signin);
 router.post('/forgotPassword', authController.forgotPassword);
 router.post('/resetPassword', authController.resetPassword);
+router.post(
+  '/updatePassword',
+  authController.authenticate,
+  authController.updatePassword
+);
 
 router
   .route('/')

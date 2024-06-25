@@ -48,7 +48,6 @@ const userSchema = new mongoose.Schema({
 userSchema.pre('save', async function(next) {
   // Only run this function if password was actually modified
   if (this.isModified('password')) {
-    console.log('modified');
     // Hash the password with cost of 12
     this.password = await bcrypt.hash(this.password, 12);
 
@@ -56,13 +55,15 @@ userSchema.pre('save', async function(next) {
     this.passwordConfirm = undefined;
     next();
   } else {
-    console.log('not modified');
     next();
   }
 });
 
-userSchema.methods.comparePassword = async function(userPassword, dbPassword) {
-  return await bcrypt.compare(userPassword, dbPassword);
+userSchema.methods.comparePassword = async function(
+  userPassword,
+  hashPassword
+) {
+  return await bcrypt.compare(userPassword, hashPassword);
 };
 
 userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {

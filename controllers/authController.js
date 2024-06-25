@@ -5,6 +5,20 @@ const createToken = require('../utils/createToken');
 const AppError = require('../utils/error/appError');
 const sendEmail = require('../utils/email');
 
+const createTokenAndSendResponse = (statusCode, user, message, res) => {
+  const token = createToken(user._id);
+  console.log(user, token);
+
+  res.status(statusCode).json({
+    success: true,
+    message,
+    token,
+    data: {
+      user
+    }
+  });
+};
+
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -14,16 +28,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     role: req.body.role
   });
 
-  const token = createToken(newUser._id);
-
-  res.status(201).json({
-    success: true,
-    message: 'User created successfully',
-    token,
-    data: {
-      newUser
-    }
-  });
+  createTokenAndSendResponse(201, newUser, 'User created successfully', res);
 });
 
 exports.signin = catchAsync(async (req, res, next) => {
@@ -38,16 +43,7 @@ exports.signin = catchAsync(async (req, res, next) => {
     return next(new AppError(401, 'Incorrect email or password'));
   }
 
-  const token = createToken(user._id);
-
-  res.status(201).json({
-    success: true,
-    message: 'Sign in successfully',
-    token,
-    data: {
-      user
-    }
-  });
+  createTokenAndSendResponse(200, user, 'Sign in successfully', res);
 });
 
 exports.authenticate = catchAsync(async (req, res, next) => {
@@ -87,11 +83,11 @@ exports.authenticate = catchAsync(async (req, res, next) => {
     );
   }
 
-  // GRANT ACCESS TO PROTECTED ROUTE
   req.user = currentUser;
   next();
 });
 
+// GRANT ACCESS TO PROTECTED ROUTE
 exports.authorization = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
@@ -145,10 +141,32 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   // 3) update user password
   const user = await User.findOne({ email: decoded.email });
   user.password = req.body.newPassword;
-  await user.save({ validateBeforeSave: false });
+  user.passwordConfirm = req.body.confirmNewPassword;
+  user.passwordChangedAt = Date.now() - 1000;
+  await user.save();
 
-  res.status(201).json({
-    success: true,
-    message: 'Password updated successfully'
-  });
+  createTokenAndSendResponse(200, user, 'Password updated successfully', res);
+});
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  // 1) Get user from collection
+  const user = await User.findById(req.user._id).select('+password');
+
+  if (!req.body.oldPassword) {
+    return next(new AppError(401, 'Wrong information'));
+  }
+
+  // // 2) Check if POSTed current password is correct
+  if (!(await user.comparePassword(req.body.oldPassword, user.password))) {
+    return next(new AppError(401, 'Wrong password'));
+  }
+
+  // // 3) If so, update password
+  user.password = req.body.newPassword;
+  user.passwordConfirm = req.body.confirmNewPassword;
+  user.passwordChangedAt = Date.now() - 1000;
+  await user.save();
+
+  // // 4) Log user in, send JWT
+  createTokenAndSendResponse(200, user, 'Password updated successfully', res);
 });
