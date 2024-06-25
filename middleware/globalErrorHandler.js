@@ -1,4 +1,4 @@
-const errorHandler = require('./errorHandler');
+const errorHandler = require('../utils/error/errorHandler');
 
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
