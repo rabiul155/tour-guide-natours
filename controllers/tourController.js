@@ -12,7 +12,13 @@ exports.aliasTopTours = (req, res, next) => {
 
 exports.getAllTours = catchAsync(async (req, res) => {
   // EXECUTE QUERY
-  const features = new APIFeatures(Tour.find(), req.query)
+  const features = new APIFeatures(
+    Tour.find().populate({
+      path: 'guide',
+      select: '-__v, -passwordChangedAt'
+    }),
+    req.query
+  )
     .filter()
     .sort()
     .limitFields()
@@ -30,7 +36,10 @@ exports.getAllTours = catchAsync(async (req, res) => {
 });
 
 exports.getTour = catchAsync(async (req, res) => {
-  const tour = await Tour.findById(req.params.id);
+  const tour = await Tour.findById(req.params.id).populate({
+    path: 'guide',
+    select: '-__v, -passwordChangedAt'
+  });
   if (!tour) {
     throw new AppError(404, 'No tour found with this id');
   }
