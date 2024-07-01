@@ -1,6 +1,7 @@
 const express = require('express');
 const tourController = require('./../controllers/tourController');
 const authController = require('./../controllers/authController');
+const reviewsController = require('./../controllers/reviewController');
 
 const router = express.Router();
 
@@ -29,5 +30,12 @@ router
     authController.authorization('admin'),
     tourController.deleteTour
   );
+
+router.post(
+  '/:id/reviews',
+  authController.authenticate,
+  authController.authorization('user'),
+  reviewsController.createReview
+);
 
 module.exports = router;

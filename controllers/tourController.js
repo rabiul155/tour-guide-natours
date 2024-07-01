@@ -36,10 +36,14 @@ exports.getAllTours = catchAsync(async (req, res) => {
 });
 
 exports.getTour = catchAsync(async (req, res) => {
-  const tour = await Tour.findById(req.params.id).populate({
-    path: 'guide',
-    select: '-__v, -passwordChangedAt'
-  });
+  const tour = await Tour.findById(req.params.id)
+    .populate({
+      path: 'guide',
+      select: '-__v, -passwordChangedAt'
+    })
+    .populate({
+      path: 'reviews'
+    });
   if (!tour) {
     throw new AppError(404, 'No tour found with this id');
   }

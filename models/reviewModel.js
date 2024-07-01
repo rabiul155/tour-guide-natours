@@ -11,7 +11,7 @@ const reviewSchema = new mongoose.Schema(
     },
     ratings: {
       type: Number,
-      min: [5, 'Rating must be greater than or equal 1'],
+      min: [1, 'Rating must be greater than or equal 1'],
       max: [5, 'Rating must be less than or equal 5']
     },
     tour: {
@@ -31,17 +31,22 @@ const reviewSchema = new mongoose.Schema(
     toObject: { virtuals: true }
   }
 );
-// reviewSchema.pre(/^find/, function(next) {
-//   this.populate({
-//     path: 'tour',
-//     select: 'name'
-//   }).populate({
-//     path: 'user',
-//     select: 'name photo'
-//   });
+reviewSchema.pre(/^find/, function(next) {
+  // this.populate({
+  //   path: 'tour',
+  //   select: 'name'
+  // }).populate({
+  //   path: 'user',
+  //   select: 'name photo'
+  // });
 
-//   next();
-// });
+  this.populate({
+    path: 'user',
+    select: 'name photo'
+  });
+
+  next();
+});
 
 const Review = mongoose.model('Review', reviewSchema);
 
