@@ -7,6 +7,7 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 
 const tourRouter = require('./routes/tourRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
 const userRouter = require('./routes/userRoutes');
 const globalErrorhandler = require('./middleware/globalErrorHandler');
 const notFoundRoute = require('./middleware/notFoundRoute');
@@ -53,6 +54,7 @@ app.get('/', (req, res) => {
 // 3) ROUTES
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 //  Handle not found route
 app.all('*', notFoundRoute);
