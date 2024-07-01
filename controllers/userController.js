@@ -72,9 +72,12 @@ exports.createUser = async (req, res) => {
   });
 };
 exports.updateUser = async (req, res) => {
-  const payload = {
-    role: req.body.role
-  };
+  const payload = {};
+  if (req.body.role) payload.role = req.body.role;
+  if (req.body.name) payload.name = req.body.name;
+  if (Object.keys(payload).length === 0) {
+    throw new AppError(401, 'Only name and role can be updated');
+  }
   const user = await User.findByIdAndUpdate(req.params.id, payload, {
     new: true,
     runValidators: true
