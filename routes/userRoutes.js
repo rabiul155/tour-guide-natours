@@ -9,49 +9,22 @@ router.post('/singin', authController.signin);
 router.post('/forgotPassword', authController.forgotPassword);
 router.post('/resetPassword', authController.resetPassword);
 
-router.post(
-  '/updatePassword',
-  authController.authenticate,
-  authController.updatePassword
-);
+router.use(authController.authenticate);
 
-router.get('/getMe', authController.authenticate, userController.getMe);
-router.patch('/updateMe', authController.authenticate, userController.updateMe);
-router.delete(
-  '/deleteMe',
-  authController.authenticate,
-  userController.deleteMe
-);
+router.get('/getMe', userController.getMe);
+router.patch('/updateMe', userController.updateMe);
+router.delete('/deleteMe', userController.deleteMe);
+router.post('/updatePassword', authController.updatePassword);
 
 router
   .route('/')
-  .get(
-    authController.authenticate,
-    authController.authorization('admin'),
-    userController.getAllUsers
-  )
-  .post(
-    authController.authenticate,
-    authController.authorization('admin'),
-    userController.createUser
-  );
+  .get(authController.authorization('admin'), userController.getAllUsers)
+  .post(authController.authorization('admin'), userController.createUser);
 
 router
   .route('/:id')
-  .get(
-    authController.authenticate,
-    authController.authorization('admin'),
-    userController.getUser
-  )
-  .patch(
-    authController.authenticate,
-    authController.authorization('admin'),
-    userController.updateUser
-  )
-  .delete(
-    authController.authenticate,
-    authController.authorization('admin'),
-    userController.deleteUser
-  );
+  .get(authController.authorization('admin'), userController.getUser)
+  .patch(authController.authorization('admin'), userController.updateUser)
+  .delete(authController.authorization('admin'), userController.deleteUser);
 
 module.exports = router;
